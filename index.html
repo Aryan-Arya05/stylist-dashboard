@@ -13,37 +13,43 @@
   --muted:#8A8174; --gold:#C9A15A; --gold-deep:#A8813D; --gold-soft:#F3E8D2;
   --line:#E7DFCE; --greige:#F1EDE4;
   --good:#2E7D4F; --good-soft:#E4F0E8; --bad:#B4462E; --bad-soft:#F7E6E0;
-  --warn:#9A7B24; --warn-soft:#F6EED6;
+  --warn:#9A7B24; --warn-soft:#F6EED6; --info:#4A5D7E; --info-soft:#E7ECF4;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5}
 .wrap{max-width:1280px;margin:0 auto;padding:0 22px 60px}
 
 /* ---------- header ---------- */
 header{border-bottom:1px solid var(--line);background:var(--cream);position:sticky;top:0;z-index:50}
-.hd{max-width:1280px;margin:0 auto;padding:16px 22px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
-.wordmark{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;letter-spacing:.22em;text-transform:uppercase}
+.hd{max-width:1280px;margin:0 auto;padding:14px 22px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.wordmark{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;letter-spacing:.22em;text-transform:uppercase}
 .hd-sub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.hd-right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--good);display:inline-block}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--good);display:inline-block;flex:none}
 .dot.stale{background:var(--warn)} .dot.err{background:var(--bad)}
 
 /* ---------- controls ---------- */
-.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:18px 0 6px}
+.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0 4px}
+.controls-b{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 0 0;
+  border-left:3px solid var(--gold);padding-left:10px;margin-top:6px}
+.controls-b.on{display:flex}
+.ctl-tag{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);font-weight:600}
 .preset{border:1px solid var(--line);background:var(--card);color:var(--ink-soft);border-radius:20px;
-  padding:6px 14px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit}
+  padding:6px 13px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
 .preset:hover{border-color:var(--gold)}
 .preset.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.custom-range{display:flex;align-items:center;gap:6px;margin-left:4px}
-.custom-range input{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-family:'JetBrains Mono',monospace;
-  font-size:12px;background:var(--card);color:var(--ink)}
-.range-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);margin-left:auto}
+.preset.toggle.active{background:var(--gold-deep);border-color:var(--gold-deep)}
+.custom-range{display:flex;align-items:center;gap:6px}
+.custom-range input{border:1px solid var(--line);border-radius:8px;padding:5px 7px;font-family:'JetBrains Mono',monospace;
+  font-size:12px;background:var(--card);color:var(--ink);max-width:135px}
+.range-label{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);margin-left:auto}
 
 /* ---------- filing strip ---------- */
 .strip-block{margin-top:14px}
 .strip-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .strip{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
-.chip{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center;cursor:default}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 6px;text-align:center}
 .chip .nm{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip .st{font-size:10px;margin-top:2px;color:var(--muted)}
 .chip.filed{border-color:var(--good);background:var(--good-soft)}
@@ -52,19 +58,33 @@ header{border-bottom:1px solid var(--line);background:var(--cream);position:stic
 .chip.missing .st{color:var(--bad);font-weight:600}
 
 /* ---------- KPI cards ---------- */
-.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 12px}
-.kpi .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.kpi .val{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:30px;line-height:1.15;margin-top:4px}
-.kpi .sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.pill{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;border-radius:10px;padding:1px 7px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px 11px}
+.kpi .lbl{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kpi .val{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:28px;line-height:1.15;margin-top:3px}
+.kpi .sub{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:4px;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.pill{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;border-radius:10px;padding:1px 7px;white-space:nowrap}
 .pill.up{background:var(--good-soft);color:var(--good)}
 .pill.down{background:var(--bad-soft);color:var(--bad)}
 .pill.flat{background:var(--greige);color:var(--muted)}
 
+/* ---------- insights ---------- */
+.insights{margin-top:16px}
+.insights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.insight{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.insight .ic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex:none;margin-top:1px}
+.insight.good .ic{background:var(--good-soft);color:var(--good)}
+.insight.warn .ic{background:var(--warn-soft);color:var(--warn)}
+.insight.bad  .ic{background:var(--bad-soft);color:var(--bad)}
+.insight.info .ic{background:var(--info-soft);color:var(--info)}
+.insight .tx{font-size:12.5px;color:var(--ink-soft)}
+.insight .tx b{color:var(--ink)}
+
 /* ---------- panels / charts ---------- */
 .grid-2{display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-top:16px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:0}
+.panel.mt{margin-top:16px}
 .panel h3{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:19px;margin-bottom:2px}
 .panel .hint{font-size:11.5px;color:var(--muted);margin-bottom:10px}
 .chart-box{position:relative;height:260px}
@@ -73,44 +93,62 @@ header{border-bottom:1px solid var(--line);background:var(--cream);position:stic
 .mixrow .k{color:var(--ink-soft)} .mixrow .v{font-family:'JetBrains Mono',monospace;font-weight:600}
 .bar-outer{height:6px;background:var(--greige);border-radius:3px;overflow:hidden;margin-top:3px}
 .bar-inner{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-deep));border-radius:3px}
+.tgt-pct{font-size:11px;color:var(--muted)}
 
-/* ---------- leaderboard ---------- */
-.lb{margin-top:16px}
+/* ---------- tables ---------- */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
 thead th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right;
-  padding:10px 10px;border-bottom:2px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap}
+  padding:10px 10px;border-bottom:2px solid var(--line);user-select:none;white-space:nowrap}
 thead th:first-child{text-align:left}
+#lbTable thead th{cursor:pointer}
 thead th.sorted{color:var(--gold-deep)}
-tbody td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px}
-tbody td:first-child{text-align:left;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer}
+tbody td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px;white-space:nowrap}
+tbody td:first-child{text-align:left;font-family:'Inter',sans-serif;font-weight:600}
+#lbTable tbody td:first-child{cursor:pointer}
 tbody tr.main:hover{background:var(--gold-soft)}
+tbody tr.grp td{background:var(--greige);font-family:'Inter',sans-serif;font-weight:600;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:7px 10px}
 .rank{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--greige);color:var(--ink-soft);
   align-items:center;justify-content:center;font-size:11px;font-weight:600;margin-right:8px;font-family:'JetBrains Mono',monospace}
 tr.top1 .rank{background:var(--gold);color:#fff}
 .caret{display:inline-block;margin-left:6px;color:var(--muted);font-size:10px;transition:transform .15s}
 tr.open .caret{transform:rotate(90deg)}
 .tgt-cell{min-width:130px}
-.tgt-pct{font-size:11px;color:var(--muted)}
-.detail td{background:var(--greige);padding:14px 16px;text-align:left;font-family:'Inter',sans-serif}
+.detail td{background:var(--greige);padding:14px 16px;text-align:left;font-family:'Inter',sans-serif;white-space:normal}
 .detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .detail-grid h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.dl{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0}
-.dl .v{font-family:'JetBrains Mono',monospace;font-weight:600}
+.dl{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;gap:10px}
+.dl .v{font-family:'JetBrains Mono',monospace;font-weight:600;text-align:right}
+.empty-row td{text-align:center;color:var(--muted);font-family:'Inter',sans-serif;padding:26px}
 
-/* ---------- states ---------- */
-.state{padding:60px 20px;text-align:center;color:var(--muted)}
-.state .big{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--ink-soft);margin-bottom:6px}
+/* ---------- states / footer ---------- */
 footer{margin-top:34px;font-size:11px;color:var(--muted);text-align:center}
 
+/* ---------- responsive ---------- */
 @media(max-width:1000px){
   .kpis{grid-template-columns:repeat(3,1fr)}
   .grid-2{grid-template-columns:1fr}
   .strip{grid-template-columns:repeat(5,1fr)}
+  .insights-grid{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:620px){
-  .kpis{grid-template-columns:repeat(2,1fr)}
+@media(max-width:640px){
+  .wrap{padding:0 12px 40px}
+  .hd{padding:12px 14px}
+  .wordmark{font-size:20px}
+  .hd-sub{display:none}
+  .controls,.controls-b{gap:6px}
+  .controls{overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+  .controls-b.on{flex-wrap:wrap}
+  .range-label{display:none}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpi .val{font-size:23px}
   .strip{grid-template-columns:repeat(2,1fr)}
+  .insights-grid{grid-template-columns:1fr}
+  .chart-box{height:210px}
+  .detail-grid{grid-template-columns:1fr}
   .hide-m{display:none}
+  tbody td,thead th{padding:9px 7px}
 }
 </style>
 </head>
@@ -124,17 +162,29 @@ footer{margin-top:34px;font-size:11px;color:var(--muted);text-align:center}
 </header>
 
 <div class="wrap">
-  <div class="controls" id="presets">
+  <div class="controls" id="presetsA">
     <button class="preset" data-preset="today">Today</button>
     <button class="preset" data-preset="yesterday">Yesterday</button>
     <button class="preset" data-preset="7d">Last 7 days</button>
     <button class="preset active" data-preset="month">This month</button>
     <button class="preset" data-preset="lastmonth">Last month</button>
     <div class="custom-range">
-      <input type="date" id="fromDate"> <span style="color:var(--muted)">→</span> <input type="date" id="toDate">
-      <button class="preset" id="applyCustom">Apply</button>
+      <input type="date" id="fromA"> <span style="color:var(--muted)">→</span> <input type="date" id="toA">
+      <button class="preset" id="applyA">Apply</button>
     </div>
+    <button class="preset toggle" id="cmpToggle">Compare ⇄</button>
     <div class="range-label" id="rangeLabel"></div>
+  </div>
+
+  <div class="controls-b" id="presetsB">
+    <span class="ctl-tag">Compare with</span>
+    <button class="preset active" data-cmp="prev">Previous period</button>
+    <button class="preset" data-cmp="prevweek">Previous week</button>
+    <button class="preset" data-cmp="samelastmonth">Same dates last month</button>
+    <div class="custom-range">
+      <input type="date" id="fromB"> <span style="color:var(--muted)">→</span> <input type="date" id="toB">
+      <button class="preset" id="applyB">Apply</button>
+    </div>
   </div>
 
   <div class="strip-block">
@@ -143,6 +193,14 @@ footer{margin-top:34px;font-size:11px;color:var(--muted);text-align:center}
   </div>
 
   <div class="kpis" id="kpis"></div>
+
+  <div class="insights">
+    <div class="panel">
+      <h3>Insights</h3>
+      <div class="hint" id="insightsHint">Auto-generated from the data in the selected range</div>
+      <div class="insights-grid" id="insightsGrid"></div>
+    </div>
+  </div>
 
   <div class="grid-2">
     <div class="panel">
@@ -160,14 +218,19 @@ footer{margin-top:34px;font-size:11px;color:var(--muted);text-align:center}
     </div>
   </div>
 
-  <div class="panel lb">
+  <div class="panel mt">
+    <h3>All metrics</h3>
+    <div class="hint" id="metricsHint">Every tracked metric for the selected range · turn on Compare to see any period vs any other</div>
+    <div class="tbl-scroll">
+      <table id="mxTable"><thead><tr id="mxHead"></tr></thead><tbody id="mxBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="panel mt">
     <h3>Stylist leaderboard</h3>
     <div class="hint">Click a column to sort · click a stylist to expand her full breakdown · targets prorated to days reported</div>
-    <div style="overflow-x:auto">
-      <table id="lbTable">
-        <thead><tr id="lbHead"></tr></thead>
-        <tbody id="lbBody"></tbody>
-      </table>
+    <div class="tbl-scroll">
+      <table id="lbTable"><thead><tr id="lbHead"></tr></thead><tbody id="lbBody"></tbody></table>
     </div>
   </div>
 
@@ -187,24 +250,27 @@ const D = {DATE:0,STYLIST:1,LEADS_EX:2,LEADS_NEW:3,LEADS_TOT:4,CONV_EX:5,VAL_EX:
   CONV_NEW:7,VAL_NEW:8,CONV_INT:9,VAL_INT:10,CONV_TOT:11,VAL_TOT:12,
   BAGS_U:13,BAGS_V:14,FTW_U:15,FTW_V:16,JWL_U:17,JWL_V:18,ACC_U:19,ACC_V:20,
   REVIEWS:21,TELLE:22,CHENNAI:23,ASIA:24,ABND:25,XS_C:26,XS_V:27,ST_C:28,ST_V:29,REMARKS:30};
-/* Target row indices */
 const T = {MONTH:0,STYLIST:1,LIST:2,M_LEADS:3,D_LEADS:4,D_CONV:5,M_VALUE:6,CR:7,AOV:8,EX_LEADS:9,NEW_LEADS:10};
 
 let RAW = {daily:[], targets:[]};
-let range = null;               // {from:'yyyy-mm-dd', to:'yyyy-mm-dd'}
+let rangeA = null, rangeB = null, compareOn = false, cmpPreset = 'prev';
 let sortKey = 'value', sortDir = -1;
 let openRows = new Set();
-let trendChart = null;
-let refreshTimer = null;
+let trendChart = null, refreshTimer = null, lastError = null;
 
-/* ---------- date helpers ---------- */
-const iso = d => d.toISOString().slice(0,10);
+/* ---------- date helpers (all computed in IST, immune to browser timezone) ---------- */
+const pad2 = n => String(n).padStart(2,'0');
+const iso = d => d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+function fromISO(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d,12); }
 function todayIST(){
-  const now = new Date(Date.now() + (330 + new Date().getTimezoneOffset())*60000);
-  return now;
+  const s = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
+  return fromISO(s);
 }
+function addDays(isoDate, n){ const d=fromISO(isoDate); d.setDate(d.getDate()+n); return iso(d); }
+function addMonths(isoDate, n){ const d=fromISO(isoDate); d.setMonth(d.getMonth()+n); return iso(d); }
 function monthOf(isoDate){ return isoDate.slice(0,7); }
 function daysInMonth(ym){ const [y,m]=ym.split('-').map(Number); return new Date(y,m,0).getDate(); }
+function rangeDays(r){ return Math.round((fromISO(r.to)-fromISO(r.from))/86400000)+1; }
 function presetRange(p){
   const t = todayIST(); const y = new Date(t); y.setDate(t.getDate()-1);
   const first = new Date(t.getFullYear(), t.getMonth(), 1);
@@ -219,49 +285,53 @@ function presetRange(p){
   }
   return {from:iso(first), to:iso(t)};
 }
+function compareRange(p){
+  const len = rangeDays(rangeA);
+  if(p==='prev')          return {from:addDays(rangeA.from,-len), to:addDays(rangeA.from,-1)};
+  if(p==='prevweek')      return {from:addDays(rangeA.from,-7),   to:addDays(rangeA.to,-7)};
+  if(p==='samelastmonth') return {from:addMonths(rangeA.from,-1), to:addMonths(rangeA.to,-1)};
+  return rangeB || {from:rangeA.from, to:rangeA.to};
+}
 
 /* ---------- formatting ---------- */
-const fmtN   = n => (n==null?'–':Number(n).toLocaleString('en-IN'));
+const fmtN = n => (n==null?'–':Number(n).toLocaleString('en-IN'));
 function fmtINR(n){
   if(n==null) return '–';
   if(Math.abs(n) >= 1e7) return '₹' + (n/1e7).toFixed(2) + ' Cr';
   if(Math.abs(n) >= 1e5) return '₹' + (n/1e5).toFixed(2) + ' L';
-  return '₹' + Number(n).toLocaleString('en-IN');
+  return '₹' + Math.round(Number(n)).toLocaleString('en-IN');
 }
 const fmtPct = (n,dp=1) => (n==null||!isFinite(n))?'–':(n*100).toFixed(dp)+'%';
-function pill(delta, invert=false){
-  if(delta==null||!isFinite(delta)) return '<span class="pill flat">no target</span>';
-  const good = invert ? delta<=0 : delta>=0;
-  const cls = good?'up':'down';
+function pill(delta, txt){
+  if(delta==null||!isFinite(delta)) return '<span class="pill flat">'+(txt||'no target')+'</span>';
+  const cls = delta>=0?'up':'down';
   const sign = delta>=0?'+':'';
-  return `<span class="pill ${cls}">${sign}${(delta*100).toFixed(1)}% vs target</span>`;
+  return `<span class="pill ${cls}">${sign}${(delta*100).toFixed(1)}%${txt?' '+txt:''}</span>`;
 }
+function deltaPct(a,b){ return (b==null||b===0||a==null)?null:(a-b)/Math.abs(b); }
 
-/* ---------- targets lookup (from-month of range, same rule as Range Summary) ---------- */
-function targetFor(stylist){
+/* ---------- targets ---------- */
+function targetFor(stylist, range){
   const ym = monthOf(range.from);
-  const row = RAW.targets.find(r => r[T.STYLIST]===stylist && r[T.MONTH]===ym);
+  const row = RAW.targets.find(r => r[T.STYLIST]===stylist && String(r[T.MONTH]).slice(0,7)===ym);
   return {
     dLeads: row ? row[T.D_LEADS] : null,
     dConv:  row ? row[T.D_CONV]  : null,
     mValue: row ? row[T.M_VALUE] : null,
     cr:     row && row[T.CR]!=null  ? row[T.CR]  : CR_FALLBACK,
-    aov:    row && row[T.AOV]!=null ? row[T.AOV] : AOV_FALLBACK,
-    list:   row ? row[T.LIST] : ''
+    aov:    row && row[T.AOV]!=null ? row[T.AOV] : AOV_FALLBACK
   };
 }
 function stylistList(){
-  const ym = monthOf(range.from);
-  const fromTargets = RAW.targets.filter(r=>r[T.MONTH]===ym).map(r=>r[T.STYLIST]);
-  if(fromTargets.length) return [...new Set(fromTargets)];
-  return [...new Set(RAW.daily.map(r=>r[D.STYLIST]))];
+  const set = new Set();
+  RAW.targets.forEach(r=>set.add(r[T.STYLIST]));
+  RAW.daily.forEach(r=>set.add(r[D.STYLIST]));
+  return [...set].filter(Boolean);
 }
 
 /* ---------- aggregation ---------- */
-function inRange(r){ return r[D.DATE] >= range.from && r[D.DATE] <= range.to; }
-
-function aggregate(){
-  const rows = RAW.daily.filter(inRange);
+function aggregate(range){
+  const rows = RAW.daily.filter(r => r[D.DATE] >= range.from && r[D.DATE] <= range.to);
   const per = {};
   stylistList().forEach(s => per[s] = blank(s));
   rows.forEach(r=>{
@@ -277,64 +347,186 @@ function aggregate(){
     add(a,'bagsU',r[D.BAGS_U]); add(a,'bagsV',r[D.BAGS_V]);
     add(a,'ftwU',r[D.FTW_U]);   add(a,'ftwV',r[D.FTW_V]);
     add(a,'jwlU',r[D.JWL_U]);   add(a,'jwlV',r[D.JWL_V]);
+    add(a,'accU',r[D.ACC_U]);   add(a,'accV',r[D.ACC_V]);
     add(a,'reviews',r[D.REVIEWS]); add(a,'telle',r[D.TELLE]); add(a,'chennai',r[D.CHENNAI]);
     add(a,'asia',r[D.ASIA]); add(a,'abnd',r[D.ABND]);
     add(a,'xsC',r[D.XS_C]); add(a,'xsV',r[D.XS_V]); add(a,'stC',r[D.ST_C]); add(a,'stV',r[D.ST_V]);
   });
   Object.values(per).forEach(a=>{
-    const t = targetFor(a.name);
+    const t = targetFor(a.name, range);
     a.leadsTarget = (t.dLeads!=null) ? a.days * t.dLeads : null;
     a.valueTarget = (t.mValue!=null) ? t.mValue * a.days / daysInMonth(monthOf(range.from)) : null;
+    a.mValueTarget = t.mValue;
     a.crTarget = t.cr; a.aovTarget = t.aov;
     a.cr  = a.leads>0 ? a.conv/a.leads : null;
     a.aov = a.conv >0 ? a.value/a.conv : null;
   });
-  return {rows, per};
+  return {rows, per, range};
 }
 function blank(name){ return {name,days:0,leads:0,leadsEx:0,leadsNew:0,conv:0,value:0,convEx:0,valEx:0,
-  convNew:0,valNew:0,convInt:0,valInt:0,bagsU:0,bagsV:0,ftwU:0,ftwV:0,jwlU:0,jwlV:0,
+  convNew:0,valNew:0,convInt:0,valInt:0,bagsU:0,bagsV:0,ftwU:0,ftwV:0,jwlU:0,jwlV:0,accU:0,accV:0,
   reviews:0,telle:0,chennai:0,asia:0,abnd:0,xsC:0,xsV:0,stC:0,stV:0}; }
 function add(o,k,v){ if(v!=null) o[k]+=v; }
 
-/* ---------- render: filing strip ---------- */
-function renderStrip(agg){
+function totals(agg){
+  const P = Object.values(agg.per);
+  const s = k => P.reduce((a,x)=>a+(x[k]||0),0);
+  const t = {};
+  ['days','leads','leadsEx','leadsNew','conv','convEx','convNew','convInt','value','valEx','valNew','valInt',
+   'bagsU','bagsV','ftwU','ftwV','jwlU','jwlV','accU','accV',
+   'reviews','telle','chennai','asia','abnd','xsC','xsV','stC','stV'].forEach(k=>t[k]=s(k));
+  t.leadsTarget = P.some(x=>x.leadsTarget!=null) ? P.reduce((a,x)=>a+(x.leadsTarget||0),0) : null;
+  t.valueTarget = P.some(x=>x.valueTarget!=null) ? P.reduce((a,x)=>a+(x.valueTarget||0),0) : null;
+  t.mValueTarget = P.some(x=>x.mValueTarget!=null) ? P.reduce((a,x)=>a+(x.mValueTarget||0),0) : null;
+  t.cr  = t.leads>0 ? t.conv/t.leads : null;
+  t.aov = t.conv >0 ? t.value/t.conv : null;
+  t.daysFiledMax = Math.max(0, ...P.map(x=>x.days));
+  return t;
+}
+
+/* ---------- insights engine ---------- */
+function buildInsights(aggA, aggB){
+  const A = totals(aggA), out = [];
+  const P = Object.values(aggA.per).filter(x=>x.days>0);
+  const push = (level, icon, html) => out.push({level, icon, html});
+
+  if(A.days===0){
+    push('info','◌','No entries in this range yet. Insights will appear once stylists start filing their daily numbers.');
+    return out;
+  }
+
+  /* pace vs monthly target (only for a true month-to-date range) */
   const t = iso(todayIST());
-  const refDate = range.to <= t ? range.to : t;
+  const isMTD = rangeA.from === monthOf(t)+'-01' && rangeA.to >= addDays(t,-1);
+  if(isMTD && A.mValueTarget){
+    const elapsed = Number(t.slice(8,10));
+    const dim = daysInMonth(monthOf(t));
+    const projected = A.value / Math.max(elapsed,1) * dim;
+    const pct = projected / A.mValueTarget;
+    push(pct>=1?'good':(pct>=0.8?'warn':'bad'), pct>=1?'▲':'◔',
+      `At the current run-rate the team lands at <b>${fmtINR(projected)}</b> this month — <b>${fmtPct(pct,0)}</b> of the ₹${(A.mValueTarget/1e5).toFixed(0)}L combined target.`);
+  }
+
+  /* top performer + concentration */
+  if(P.length){
+    const top = [...P].sort((a,b)=>b.value-a.value)[0];
+    if(top.value>0){
+      const share = top.value/A.value;
+      push('good','★',`<b>${top.name}</b> leads with <b>${fmtINR(top.value)}</b> (${fmtPct(share,0)} of team value)${share>0.4?' — heavy concentration, the rest of the team is far behind':''}.`);
+    }
+  }
+
+  /* below prorated value target */
+  const behind = P.filter(x=>x.valueTarget!=null && x.valueTarget>0 && x.value/x.valueTarget<0.8)
+                  .sort((a,b)=>a.value/a.valueTarget-b.value/b.valueTarget);
+  if(behind.length)
+    push('bad','▼',`<b>${behind.slice(0,3).map(x=>x.name).join(', ')}</b>${behind.length>3?' +'+(behind.length-3)+' more':''} ${behind.length===1?'is':'are'} under 80% of the prorated value target.`);
+
+  /* CR outliers */
+  const lowCR = P.filter(x=>x.leads>=10 && x.cr!=null && x.cr < x.crTarget*0.7);
+  if(lowCR.length)
+    push('warn','◑',`<b>${lowCR.map(x=>x.name).join(', ')}</b>: healthy lead flow but conversion under ${fmtPct(lowCR[0].crTarget*0.7,0)} — worth reviewing lead quality or follow-up.`);
+  const hiCR = P.filter(x=>x.leads>=5 && x.cr!=null && x.cr>=x.crTarget*1.2 && x.leads < (x.leadsTarget||Infinity)*0.7);
+  if(hiCR.length)
+    push('info','◈',`<b>${hiCR.map(x=>x.name).join(', ')}</b> ${hiCR.length===1?'converts':'convert'} well above target but ${hiCR.length===1?'is':'are'} under-fed on leads — routing more leads here is the cheapest win.`);
+
+  /* AOV */
+  const lowAOV = P.filter(x=>x.conv>=3 && x.aov!=null && x.aov < x.aovTarget*0.85);
+  if(lowAOV.length)
+    push('warn','₹',`AOV below ₹${Math.round(lowAOV[0].aovTarget*0.85).toLocaleString('en-IN')} for <b>${lowAOV.map(x=>x.name).join(', ')}</b> — cross-sell/upsell push could lift ticket size.`);
+
+  /* filing discipline */
+  const gaps = P.filter(x=>x.days < A.daysFiledMax - 1);
+  if(gaps.length)
+    push('warn','✎',`<b>${gaps.map(x=>x.name).join(', ')}</b> ${gaps.length===1?'has':'have'} missed filing days (${gaps.map(x=>x.days).join(', ')} vs ${A.daysFiledMax} max) — numbers may be understated.`);
+
+  /* segment shape */
+  if(A.value>0){
+    const newShare = A.valNew/A.value;
+    if(newShare<0.2) push('info','◍',`Only <b>${fmtPct(newShare,0)}</b> of value comes from new customers — the range is existing-customer heavy.`);
+    if(A.valInt>0)   push('info','✈',`International contributed <b>${fmtINR(A.valInt)}</b> across ${fmtN(A.convInt)} conversion${A.convInt===1?'':'s'}.`);
+  }
+
+  /* accessories attach */
+  if(A.value>0){
+    const acc = A.bagsV+A.ftwV+A.jwlV;
+    if(acc>0) push('good','◆',`Accessories added <b>${fmtINR(acc)}</b> (${fmtPct(acc/A.value,1)} attach on value) — jewellery ${fmtINR(A.jwlV)}, bags ${fmtINR(A.bagsV)}, footwear ${fmtINR(A.ftwV)}.`);
+    else push('info','◇','No accessory add-ons recorded in this range — bags, footwear and jewellery are untouched cross-sell room.');
+  }
+
+  /* comparison movers */
+  if(aggB){
+    const B = totals(aggB);
+    const dv = deltaPct(A.value,B.value), dc = deltaPct(A.cr,B.cr), dl = deltaPct(A.leads,B.leads);
+    if(dv!=null) push(dv>=0?'good':'bad', dv>=0?'⬆':'⬇',
+      `Value is <b>${fmtPct(Math.abs(dv),0)} ${dv>=0?'up':'down'}</b> vs the comparison period (${fmtINR(A.value)} vs ${fmtINR(B.value)}).`);
+    if(dl!=null && dc!=null && dl>0.15 && dc<-0.1)
+      push('warn','⚖','Leads grew but conversion rate fell vs the comparison period — volume is up, quality or follow-up is slipping.');
+    const movers = Object.values(aggA.per).map(x=>{
+      const b = aggB.per[x.name]; return {name:x.name, d: b&&b.value>0 ? (x.value-b.value)/b.value : null, v:x.value};
+    }).filter(x=>x.d!=null);
+    if(movers.length){
+      const up = [...movers].sort((a,b)=>b.d-a.d)[0];
+      const dn = [...movers].sort((a,b)=>a.d-b.d)[0];
+      if(up.d>0.15) push('good','↗',`Biggest riser: <b>${up.name}</b>, ${fmtPct(up.d,0)} up on value vs the comparison period.`);
+      if(dn.d<-0.15) push('bad','↘',`Biggest drop: <b>${dn.name}</b>, ${fmtPct(Math.abs(dn.d),0)} down on value vs the comparison period.`);
+    }
+  }
+  return out.slice(0,9);
+}
+
+/* ---------- render: filing strip ---------- */
+function renderStrip(){
+  const t = iso(todayIST());
+  const refDate = rangeA.to <= t ? rangeA.to : t;
   document.getElementById('stripTitle').textContent = 'Reporting status · ' + refDate;
   const filedSet = new Set(RAW.daily.filter(r=>r[D.DATE]===refDate && r[D.LEADS_TOT]!=null).map(r=>r[D.STYLIST]));
-  document.getElementById('strip').innerHTML = stylistList().map(s=>{
+  const list = stylistList();
+  document.getElementById('strip').innerHTML = list.length ? list.map(s=>{
     const filed = filedSet.has(s);
     return `<div class="chip ${filed?'filed':'missing'}" title="${s}">
       <div class="nm">${s}</div><div class="st">${filed?'Filed':'Pending'}</div></div>`;
-  }).join('');
+  }).join('') : `<div class="chip" style="grid-column:1/-1">
+      <div class="nm">No stylists found</div><div class="st">Check API connection & Targets tab</div></div>`;
 }
 
 /* ---------- render: KPIs ---------- */
-function renderKPIs(agg){
-  const P = Object.values(agg.per);
-  const sum = k => P.reduce((a,x)=>a+(x[k]||0),0);
-  const leads=sum('leads'), conv=sum('conv'), value=sum('value');
-  const leadsTgt = P.some(x=>x.leadsTarget!=null) ? P.reduce((a,x)=>a+(x.leadsTarget||0),0) : null;
-  const valueTgt = P.some(x=>x.valueTarget!=null) ? P.reduce((a,x)=>a+(x.valueTarget||0),0) : null;
-  const cr  = leads>0?conv/leads:null;
-  const aov = conv>0?value/conv:null;
+function renderKPIs(aggA, aggB){
+  const A = totals(aggA), B = aggB ? totals(aggB) : null;
+  const vs = (a,b) => B ? pill(deltaPct(a,b),'vs B') : null;
   const cards = [
-    {lbl:'Leads', val:fmtN(leads), sub:`target ${fmtN(leadsTgt)}`, p:pill(leadsTgt?(leads-leadsTgt)/leadsTgt:null)},
-    {lbl:'Conversions', val:fmtN(conv), sub:`${fmtN(sum('convInt'))} international`, p:''},
-    {lbl:'Conversion rate', val:fmtPct(cr), sub:`target ${fmtPct(CR_FALLBACK,0)}`, p:pill(cr!=null?(cr-CR_FALLBACK):null)},
-    {lbl:'Sale value', val:fmtINR(value), sub:`target ${fmtINR(valueTgt)}`, p:pill(valueTgt?(value-valueTgt)/valueTgt:null)},
-    {lbl:'AOV', val:fmtINR(aov), sub:`target ${fmtINR(AOV_FALLBACK)}`, p:pill(aov!=null?(aov-AOV_FALLBACK)/AOV_FALLBACK:null)},
-    {lbl:'Add-on value', val:fmtINR(sum('bagsV')+sum('ftwV')+sum('jwlV')), sub:`${fmtN(sum('bagsU')+sum('ftwU')+sum('jwlU'))} accessories units`, p:''},
+    {lbl:'Leads', val:fmtN(A.leads), sub:`target ${fmtN(A.leadsTarget)}`,
+      p: B?vs(A.leads,B.leads):pill(A.leadsTarget?(A.leads-A.leadsTarget)/A.leadsTarget:null)},
+    {lbl:'Conversions', val:fmtN(A.conv), sub:`${fmtN(A.convInt)} international`,
+      p: B?vs(A.conv,B.conv):''},
+    {lbl:'Conversion rate', val:fmtPct(A.cr), sub:`target ${fmtPct(CR_FALLBACK,0)}`,
+      p: B?vs(A.cr,B.cr):pill(A.cr!=null?(A.cr-CR_FALLBACK):null)},
+    {lbl:'Sale value', val:fmtINR(A.value), sub:`target ${fmtINR(A.valueTarget)}`,
+      p: B?vs(A.value,B.value):pill(A.valueTarget?(A.value-A.valueTarget)/A.valueTarget:null)},
+    {lbl:'AOV', val:fmtINR(A.aov), sub:`target ${fmtINR(AOV_FALLBACK)}`,
+      p: B?vs(A.aov,B.aov):pill(A.aov!=null?(A.aov-AOV_FALLBACK)/AOV_FALLBACK:null)},
+    {lbl:'Add-on value', val:fmtINR(A.bagsV+A.ftwV+A.jwlV), sub:`${fmtN(A.bagsU+A.ftwU+A.jwlU)} accessories units`,
+      p: B?vs(A.bagsV+A.ftwV+A.jwlV, B.bagsV+B.ftwV+B.jwlV):''},
   ];
   document.getElementById('kpis').innerHTML = cards.map(c=>`
     <div class="kpi"><div class="lbl">${c.lbl}</div><div class="val">${c.val}</div>
-    <div class="sub">${c.sub} ${c.p}</div></div>`).join('');
+    <div class="sub">${c.sub} ${c.p||''}</div></div>`).join('');
+}
+
+/* ---------- render: insights ---------- */
+function renderInsights(aggA, aggB){
+  const list = buildInsights(aggA, aggB);
+  document.getElementById('insightsHint').textContent = aggB
+    ? `Auto-generated · ${rangeA.from} → ${rangeA.to} compared with ${rangeB.from} → ${rangeB.to}`
+    : `Auto-generated from the data in ${rangeA.from} → ${rangeA.to}`;
+  document.getElementById('insightsGrid').innerHTML = list.map(i=>`
+    <div class="insight ${i.level}"><div class="ic">${i.icon}</div><div class="tx">${i.html}</div></div>`).join('');
 }
 
 /* ---------- render: trend chart ---------- */
-function renderTrend(agg){
+function renderTrend(aggA){
   const byDate = {};
-  agg.rows.forEach(r=>{
+  aggA.rows.forEach(r=>{
     const d=r[D.DATE];
     byDate[d] = byDate[d] || {v:0,c:0};
     byDate[d].v += r[D.VAL_TOT]||0;
@@ -361,16 +553,15 @@ function renderTrend(agg){
 }
 
 /* ---------- render: mixes ---------- */
-function renderMix(agg){
-  const P = Object.values(agg.per);
-  const sum = k => P.reduce((a,x)=>a+(x[k]||0),0);
-  const segs = [['Existing customers',sum('valEx')],['New customers',sum('valNew')],['International',sum('valInt')]];
+function renderMix(aggA){
+  const A = totals(aggA);
+  const segs = [['Existing customers',A.valEx],['New customers',A.valNew],['International',A.valInt]];
   const total = segs.reduce((a,s)=>a+s[1],0) || 1;
   document.getElementById('segmentMix').innerHTML = segs.map(([k,v])=>`
     <div class="mixrow"><div style="flex:1"><div class="k">${k}</div>
     <div class="bar-outer"><div class="bar-inner" style="width:${(v/total*100).toFixed(1)}%"></div></div></div>
     <div class="v" style="margin-left:12px">${fmtINR(v)}<span class="tgt-pct"> · ${(v/total*100).toFixed(0)}%</span></div></div>`).join('');
-  const cats = [['Bags',sum('bagsV'),sum('bagsU')],['Footwear',sum('ftwV'),sum('ftwU')],['Jewellery',sum('jwlV'),sum('jwlU')]];
+  const cats = [['Bags',A.bagsV,A.bagsU],['Footwear',A.ftwV,A.ftwU],['Jewellery',A.jwlV,A.jwlU]];
   const ctot = cats.reduce((a,c)=>a+c[1],0) || 1;
   document.getElementById('categoryMix').innerHTML = cats.map(([k,v,u])=>`
     <div class="mixrow"><div style="flex:1"><div class="k">${k} <span class="tgt-pct">(${fmtN(u)} pcs)</span></div>
@@ -378,26 +569,75 @@ function renderMix(agg){
     <div class="v" style="margin-left:12px">${fmtINR(v)}</div></div>`).join('');
 }
 
+/* ---------- render: all-metrics table ---------- */
+const METRICS = [
+  ['grp','Volume'],
+  ['days','Days filed','n'], ['leads','Leads — total','n'], ['leadsEx','Leads — existing','n'], ['leadsNew','Leads — new','n'],
+  ['grp','Conversions'],
+  ['conv','Conversions — total','n'], ['convEx','Conversions — existing','n'], ['convNew','Conversions — new','n'],
+  ['convInt','Conversions — international','n'], ['cr','Conversion rate','pct'],
+  ['grp','Value'],
+  ['value','Sale value — total','inr'], ['valEx','Value — existing','inr'], ['valNew','Value — new','inr'],
+  ['valInt','Value — international','inr'], ['aov','AOV','inr'],
+  ['grp','Categories'],
+  ['bagsU','Bags — units','n'], ['bagsV','Bags — value','inr'],
+  ['ftwU','Footwear — units','n'], ['ftwV','Footwear — value','inr'],
+  ['jwlU','Jewellery — units','n'], ['jwlV','Jewellery — value','inr'],
+  ['grp','Tasks'],
+  ['reviews','Reviews done','n'], ['telle','Tellephant worked','n'], ['chennai','Chennai bulk worked','n'],
+  ['asia','Asia bulk worked','n'], ['abnd','Abandoned carts worked','n'],
+  ['xsC','Cross-sell/upsell — conv','n'], ['xsV','Cross-sell/upsell — value','inr'],
+  ['stC','Store leads — conv','n'], ['stV','Store leads — value','inr'],
+];
+function fmtBy(kind, v){
+  if(kind==='inr') return fmtINR(v);
+  if(kind==='pct') return fmtPct(v);
+  return fmtN(v);
+}
+function renderMetrics(aggA, aggB){
+  const A = totals(aggA), B = aggB ? totals(aggB) : null;
+  const head = document.getElementById('mxHead');
+  head.innerHTML = B
+    ? `<th>Metric</th><th>A · ${rangeA.from} → ${rangeA.to}</th><th>B · ${rangeB.from} → ${rangeB.to}</th><th>Δ</th>`
+    : `<th>Metric</th><th>${rangeA.from} → ${rangeA.to}</th>`;
+  document.getElementById('mxBody').innerHTML = METRICS.map(m=>{
+    if(m[0]==='grp') return `<tr class="grp"><td colspan="${B?4:2}">${m[1]}</td></tr>`;
+    const [key,lbl,kind] = m;
+    const a = A[key], b = B?B[key]:null;
+    const d = B ? deltaPct(a,b) : null;
+    return `<tr><td>${lbl}</td><td>${fmtBy(kind,a)}</td>${B?`<td>${fmtBy(kind,b)}</td><td>${pill(d,'')}</td>`:''}</tr>`;
+  }).join('');
+  document.getElementById('metricsHint').textContent = B
+    ? 'Period A vs Period B with change — set either side to a single day, a week, or a month'
+    : 'Every tracked metric for the selected range · turn on Compare to see any period vs any other';
+}
+
 /* ---------- render: leaderboard ---------- */
 const COLS = [
-  {key:'name', lbl:'Stylist', num:false},
-  {key:'days', lbl:'Days filed', num:true, cls:'hide-m'},
-  {key:'leads', lbl:'Leads', num:true},
-  {key:'conv', lbl:'Conv.', num:true},
-  {key:'cr', lbl:'CR', num:true},
-  {key:'value', lbl:'Value', num:true},
-  {key:'tgt', lbl:'% of target', num:true},
-  {key:'aov', lbl:'AOV', num:true, cls:'hide-m'},
+  {key:'name', lbl:'Stylist'},
+  {key:'days', lbl:'Days filed', cls:'hide-m'},
+  {key:'leads', lbl:'Leads'},
+  {key:'conv', lbl:'Conv.'},
+  {key:'cr', lbl:'CR'},
+  {key:'value', lbl:'Value'},
+  {key:'tgt', lbl:'% of target'},
+  {key:'aov', lbl:'AOV', cls:'hide-m'},
 ];
-function renderLB(agg){
+function renderLB(aggA, aggB){
   const head = document.getElementById('lbHead');
-  head.innerHTML = COLS.map(c=>`<th data-key="${c.key}" class="${c.cls||''} ${sortKey===c.key?'sorted':''}">${c.lbl}${sortKey===c.key?(sortDir<0?' ↓':' ↑'):''}</th>`).join('');
+  const cols = [...COLS];
+  if(aggB) cols.splice(6, 0, {key:'dB', lbl:'Δ vs B'});
+  head.innerHTML = cols.map(c=>`<th data-key="${c.key}" class="${c.cls||''} ${sortKey===c.key?'sorted':''}">${c.lbl}${sortKey===c.key?(sortDir<0?' ↓':' ↑'):''}</th>`).join('');
   head.querySelectorAll('th').forEach(th=>th.onclick=()=>{
     const k=th.dataset.key;
     if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir=-1;}
-    renderLB(agg);
+    renderLB(aggA, aggB);
   });
-  const arr = Object.values(agg.per).map(a=>({...a, tgt: a.valueTarget?a.value/a.valueTarget:null}));
+  const arr = Object.values(aggA.per).map(a=>{
+    const b = aggB ? aggB.per[a.name] : null;
+    return {...a, tgt: a.valueTarget?a.value/a.valueTarget:null,
+            dB: b && b.value>0 ? (a.value-b.value)/b.value : null};
+  });
   arr.sort((x,y)=>{
     let a=x[sortKey], b=y[sortKey];
     if(sortKey==='name') return sortDir*String(a).localeCompare(String(b));
@@ -405,35 +645,43 @@ function renderLB(agg){
     return sortDir*(a<b?-1:a>b?1:0);
   });
   const body = document.getElementById('lbBody');
+  if(!arr.length){
+    body.innerHTML = `<tr class="empty-row"><td colspan="${cols.length}">
+      ${lastError ? 'Data could not be loaded — check the API_URL and the Apps Script deployment.'
+                  : 'No stylists found. Make sure the Targets tab has this month\'s rows and the Web App is redeployed after any Code.gs change.'}</td></tr>`;
+    return;
+  }
   body.innerHTML = arr.map((a,i)=>{
-    const crPill = a.cr==null?'':`<span class="pill ${a.cr>=a.crTarget?'up':'down'}">${fmtPct(a.cr,0)}</span>`;
+    const crPill = a.cr==null?'–':`<span class="pill ${a.cr>=a.crTarget?'up':'down'}">${fmtPct(a.cr,0)}</span>`;
     const tgtBar = a.tgt==null?'<span class="tgt-pct">no target</span>':
       `<div class="tgt-cell"><div style="display:flex;justify-content:space-between"><span>${fmtPct(a.tgt,0)}</span>
        <span class="tgt-pct">${fmtINR(a.valueTarget)}</span></div>
        <div class="bar-outer"><div class="bar-inner" style="width:${Math.min(a.tgt*100,100).toFixed(1)}%"></div></div></div>`;
     const open = openRows.has(a.name);
+    const dBCell = aggB ? `<td>${a.dB==null?'–':pill(a.dB,'')}</td>` : '';
     return `
     <tr class="main ${i===0&&sortKey==='value'?'top1':''} ${open?'open':''}" data-name="${a.name}">
       <td><span class="rank">${i+1}</span>${a.name}<span class="caret">▶</span></td>
       <td class="hide-m">${a.days}</td>
       <td>${fmtN(a.leads)}<span class="tgt-pct">${a.leadsTarget!=null?' / '+fmtN(a.leadsTarget):''}</span></td>
       <td>${fmtN(a.conv)}</td>
-      <td>${crPill||'–'}</td>
+      <td>${crPill}</td>
       <td>${fmtINR(a.value)}</td>
+      ${dBCell}
       <td>${tgtBar}</td>
       <td class="hide-m">${fmtINR(a.aov)}</td>
     </tr>
-    ${open?detailRow(a):''}`;
+    ${open?detailRow(a, aggB?cols.length:cols.length):''}`;
   }).join('');
   body.querySelectorAll('tr.main td:first-child').forEach(td=>td.onclick=()=>{
     const n=td.parentElement.dataset.name;
     openRows.has(n)?openRows.delete(n):openRows.add(n);
-    renderLB(agg);
+    renderLB(aggA, aggB);
   });
 }
-function detailRow(a){
+function detailRow(a, span){
   const seg = (lbl,c,v,l)=>`<div class="dl"><span>${lbl}</span><span class="v">${fmtN(c)} conv · ${fmtINR(v)}${l!=null?' · '+fmtN(l)+' leads':''}</span></div>`;
-  return `<tr class="detail"><td colspan="8"><div class="detail-grid">
+  return `<tr class="detail"><td colspan="${span}"><div class="detail-grid">
     <div><h4>Segments</h4>
       ${seg('Existing',a.convEx,a.valEx,a.leadsEx)}
       ${seg('New',a.convNew,a.valNew,a.leadsNew)}
@@ -455,13 +703,18 @@ function detailRow(a){
 
 /* ---------- orchestration ---------- */
 function renderAll(){
-  document.getElementById('rangeLabel').textContent = range.from + ' → ' + range.to;
-  document.getElementById('fromDate').value = range.from;
-  document.getElementById('toDate').value = range.to;
-  const agg = aggregate();
-  renderStrip(agg); renderKPIs(agg); renderTrend(agg); renderMix(agg); renderLB(agg);
+  if(compareOn) rangeB = compareRange(cmpPreset);
+  document.getElementById('rangeLabel').textContent =
+    rangeA.from + ' → ' + rangeA.to + (compareOn ? '  vs  ' + rangeB.from + ' → ' + rangeB.to : '');
+  document.getElementById('fromA').value = rangeA.from;
+  document.getElementById('toA').value = rangeA.to;
+  if(compareOn){ document.getElementById('fromB').value = rangeB.from; document.getElementById('toB').value = rangeB.to; }
+  const aggA = aggregate(rangeA);
+  const aggB = compareOn ? aggregate(rangeB) : null;
+  renderStrip(); renderKPIs(aggA, aggB); renderInsights(aggA, aggB);
+  renderTrend(aggA); renderMix(aggA); renderMetrics(aggA, aggB); renderLB(aggA, aggB);
   document.getElementById('foot').textContent =
-    `Mulmul · Stylist Report · targets prorated using the ${monthOf(range.from)} target sheet · auto-refresh every ${REFRESH_MINUTES} min`;
+    `Mulmul · Stylist Report · targets prorated using the ${monthOf(rangeA.from)} target sheet · auto-refresh every ${REFRESH_MINUTES} min`;
 }
 
 async function load(){
@@ -471,30 +724,55 @@ async function load(){
     const j = await res.json();
     if(!j.ok) throw new Error(j.error||'API error');
     RAW.daily = j.daily||[]; RAW.targets = j.targets||[];
+    lastError = null;
     dot.className='dot';
-    lu.textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-    renderAll();
+    lu.textContent = 'Updated ' + new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'});
   }catch(err){
+    lastError = err;
     dot.className='dot err';
     lu.textContent = 'Fetch failed — check API_URL';
     console.error(err);
   }
+  renderAll();
 }
 
-/* controls */
-document.getElementById('presets').querySelectorAll('.preset[data-preset]').forEach(b=>{
+/* controls: period A */
+document.getElementById('presetsA').querySelectorAll('.preset[data-preset]').forEach(b=>{
   b.onclick=()=>{
-    document.querySelectorAll('.preset').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('#presetsA .preset[data-preset]').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
-    range = presetRange(b.dataset.preset);
+    rangeA = presetRange(b.dataset.preset);
     renderAll();
   };
 });
-document.getElementById('applyCustom').onclick=()=>{
-  const f=document.getElementById('fromDate').value, t=document.getElementById('toDate').value;
+document.getElementById('applyA').onclick=()=>{
+  const f=document.getElementById('fromA').value, t=document.getElementById('toA').value;
   if(!f||!t||f>t) return;
-  document.querySelectorAll('.preset').forEach(x=>x.classList.remove('active'));
-  range={from:f,to:t};
+  document.querySelectorAll('#presetsA .preset[data-preset]').forEach(x=>x.classList.remove('active'));
+  rangeA={from:f,to:t};
+  renderAll();
+};
+/* controls: compare */
+document.getElementById('cmpToggle').onclick=()=>{
+  compareOn = !compareOn;
+  document.getElementById('cmpToggle').classList.toggle('active', compareOn);
+  document.getElementById('presetsB').classList.toggle('on', compareOn);
+  renderAll();
+};
+document.getElementById('presetsB').querySelectorAll('.preset[data-cmp]').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('#presetsB .preset[data-cmp]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    cmpPreset = b.dataset.cmp;
+    renderAll();
+  };
+});
+document.getElementById('applyB').onclick=()=>{
+  const f=document.getElementById('fromB').value, t=document.getElementById('toB').value;
+  if(!f||!t||f>t) return;
+  document.querySelectorAll('#presetsB .preset[data-cmp]').forEach(x=>x.classList.remove('active'));
+  cmpPreset='custom';
+  rangeB={from:f,to:t};
   renderAll();
 };
 
@@ -504,15 +782,11 @@ function startTimer(){
   refreshTimer = setInterval(()=>{ if(!document.hidden) load(); }, REFRESH_MINUTES*60*1000);
 }
 document.addEventListener('visibilitychange', ()=>{
-  if(!document.hidden){
-    document.getElementById('statusDot').className='dot';
-    load();
-  } else {
-    document.getElementById('statusDot').className='dot stale';
-  }
+  if(!document.hidden){ document.getElementById('statusDot').className='dot'; load(); }
+  else { document.getElementById('statusDot').className='dot stale'; }
 });
 
-range = presetRange('month');
+rangeA = presetRange('month');
 load();
 startTimer();
 </script>
