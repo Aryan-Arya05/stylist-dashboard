@@ -2030,98 +2030,52 @@ function render() {
       const errMsg = sd?._error || 'Store data loading... refresh in a moment';
       mc.innerHTML = '<div class="card"><div class="empty"><p style="color:var(--tx2)">No store data</p><small>' + errMsg + '</small></div></div>';
     } else {
-      const stores  = sd.stores  || [];
-      const allCities = sd.cityBreakdown || [];
-      const today   = sd.todayStores || [];
-      const summary = sd.summary || {};
-      const last30  = sd.last30 || [];
+      const stores      = sd.stores  || [];
+      const allCities   = sd.cityBreakdown || [];
+      const summary     = sd.summary || {};
+      const last30      = sd.last30  || [];
+      const todayStores = sd.todayStores || [];
+      const yestStores  = sd.yesterdayStores || [];
+      const yestDate    = sd.yesterdayDate   || '';
+      const latestDate  = sd.latestDate      || '';
 
-      // Smart Indian number format
+      // Indian number format
       const fmtIN = function(v) {
         v = Math.abs(Math.round(v || 0));
         if (v >= 1e7) return '\u20b9' + (v/1e7).toFixed(2) + 'Cr';
         if (v >= 1e5) return '\u20b9' + (v/1e5).toFixed(1) + 'L';
-        if (v >= 1e3) return '\u20b9' + (v/1e3).toFixed(0) + 'K';
+        if (v >= 1e3) return '\u20b9' + Math.round(v/1e3) + 'K';
         return '\u20b9' + v;
       };
-      const fmtPct = function(v) { return (v > 0 ? '+' : '') + (v || 0).toFixed(1) + '%'; };
-      const grwCol = function(g) { return g >= 0 ? 'var(--upc)' : 'var(--dnc)'; };
+      const fmtPct  = function(v) { return (v > 0 ? '+' : '') + (v || 0).toFixed(1) + '%'; };
+      const grwCol  = function(g) { return g >= 0 ? 'var(--upc)' : 'var(--dnc)'; };
       const grwPill = function(g) { return '<span class="' + (g >= 0 ? 'up-pill' : 'dn-pill') + '">' + fmtPct(g) + '</span>'; };
-
-      // City filter state
-      const cityMonthFilter = window._storesCityMonth || sd.currentMonth || '2026-07';
-      // Month column mapping (matches STORE_MONTH_COLS in Code.gs)
-      const CITY_MONTH_COLS = {
-        '2026-04': 'apr', '2026-05': 'may', '2026-06': 'jun', '2026-07': 'jul'
+      const fmtDateLabel = function(d) {
+        if (!d) return '';
+        var parts = d.split('-');
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return parts[2] + ' ' + months[+parts[1]-1] + ' ' + parts[0];
       };
-      const MONTH_NAMES = {'2026-04':'April','2026-05':'May','2026-06':'June','2026-07':'July'};
-      const availMonths = Object.keys(MONTH_NAMES).filter(function(mk) {
-        // only show months that have data in stores
-        return stores.some(function(s) { return s.monthly && s.monthly[mk] && s.monthly[mk].v2026 > 0; });
-      });
 
-      // Build city data for selected month
-      const cityData = (function() {
-        // Aggregate city revenue for the selected month from store.monthly data
-        var cityMap = {};
-        stores.forEach(function(s) {
-          var mo = s.monthly && s.monthly[cityMonthFilter];
-          if (!mo) return;
-          var ck = (s.city || '').toLowerCase().trim();
-          var city = s.city || '';
-          if (!cityMap[ck]) cityMap[ck] = {city:city, cur:0, prev:0, count:0};
-          cityMap[ck].cur += mo.v2026 || 0;
-          cityMap[ck].prev += mo.v2025 || 0;
-          cityMap[ck].count += 1;
-        });
-        return Object.values(cityMap).map(function(c) {
-          return {city:c.city, cur:c.cur, prev:c.prev, count:c.count,
-            growth: c.prev > 0 ? (c.cur - c.prev) / c.prev : 0};
-        }).sort(function(a,b) { return b.cur - a.cur; });
-      })();
-
-      // Store view filter: 'today' or 'yesterday' or 'mtd'
-      const storeView = window._storeView || 'today';
-      const mkViewPill = function(label, val) {
-        const active = storeView === val;
-        return '<button onclick="window._storeView='+val+';render();" style="padding:5px 12px;border-radius:20px;font-size:11.5px;' +
-          'font-family:var(--f-sans);font-weight:' + (active?'500':'400') + ';cursor:pointer;border:1px solid ' +
-          (active?'var(--tx)':'var(--bd)') + ';background:' + (active?'var(--tx)':'transparent') + ';' +
-          'color:' + (active?'var(--bg2)':'var(--tx2)') + ';transition:all .18s;">' + label + '</button>';
-      };
-      const viewPills = '<div style="display:flex;gap:6px;align-items:center;margin-bottom:14px">' +
-        '<span style="font-size:9.5px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-right:4px">View</span>' +
-        mkViewPill('Today', 'today') + mkViewPill('Yesterday', 'yesterday') + mkViewPill('MTD', 'mtd') + '</div>';
-
-      // Select the active day data
-      const activeDay = storeView === 'yesterday' ? (sd.yesterdayStores || []) : (sd.todayStores || []);
-      const activeDayDate = storeView === 'yesterday' ? (sd.yesterdayDate || 'Yesterday') : (sd.latestDate || 'Today');
-      const activeDayTotal = storeView === 'yesterday'
-        ? (sd.last30.find(function(d){return d.date===sd.yesterdayDate;})||{}).total2026||0
-        : sd.todayTotal2026;
-      const activeDayTotal25 = storeView === 'yesterday'
-        ? (sd.last30.find(function(d){return d.date===sd.yesterdayDate;})||{}).total2025||0
-        : sd.todayTotal2025;
-
-      // KPI strip
+      // ── 1. KPI Cards ──────────────────────────────────────────────────────────
       const kpis = [
         {l:'MTD Revenue',    v:fmtIN(sd.mtd2026),          c:'var(--acc)'},
         {l:'Last Year MTD',  v:fmtIN(sd.mtd2025),          c:'var(--tx2)'},
         {l:'YoY Growth',     v:fmtPct(sd.mtdGrowth),       c:grwCol(sd.mtdGrowth)},
         {l:'Today Total',    v:fmtIN(sd.todayTotal2026),    c:'var(--acc2)'},
-        {l:'Best Store',     v:summary.bestStoreName||'--', c:'var(--tx)'},
+        {l:'Best Store MTD', v:summary.bestStoreName||'--', c:'var(--tx)'},
         {l:'Growing Stores', v:(summary.storesGrowing||0)+'/'+(summary.totalStores||0), c:'var(--upc)'},
       ];
       const kpiHtml = '<div class="g6" style="margin-bottom:12px">' +
         kpis.map(function(k) {
           return '<div class="card"><span class="lbl">' + k.l + '</span>' +
-            '<div style="font-size:' + (k.l === 'Best Store' ? '13px' : '20px') + ';font-weight:600;color:' + k.c + ';' +
-            'font-family:' + (k.l === 'Best Store' ? 'var(--f-sans)' : 'var(--f-mono)') + ';letter-spacing:-.03em;margin-bottom:4px;' +
+            '<div style="font-size:' + (k.l.indexOf('Best')>=0?'13px':'20px') + ';font-weight:600;color:' + k.c + ';' +
+            'font-family:' + (k.l.indexOf('Best')>=0?'var(--f-sans)':'var(--f-mono)') + ';letter-spacing:-.03em;margin-bottom:4px;' +
             'overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + k.v + '</div>' +
             '<div style="font-size:9.5px;color:var(--tx3);font-family:var(--f-mono)">' + (sd.currentMonth||'') + ' · ' + (sd.mtdDays||0) + 'd</div></div>';
         }).join('') + '</div>';
 
-      // Revenue trend
+      // ── 2. Daily Revenue Trend ─────────────────────────────────────────────────
       const maxT = Math.max.apply(null, last30.map(function(d){return Math.max(d.total2026,d.total2025);}).concat([1]));
       const trendBars = last30.map(function(d) {
         const h26 = Math.max((d.total2026/maxT)*80,2);
@@ -2137,35 +2091,53 @@ function render() {
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
         '<span class="lbl" style="margin:0">Daily Revenue — ' + sd.mtdDays + ' Days</span>' +
         '<div style="display:flex;gap:12px">' +
-        '<span style="font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:5px"><span style="width:10px;height:4px;border-radius:2px;background:var(--acc);display:inline-block"></span>2026</span>' +
-        '<span style="font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:5px"><span style="width:10px;height:4px;border-radius:2px;background:var(--bar);border:1px solid var(--bd);display:inline-block"></span>2025</span>' +
+        '<span style="font-size:10px;color:var(--tx2);display:flex;align-items:center;gap:5px"><span style="width:10px;height:4px;background:var(--acc);border-radius:2px;display:inline-block"></span>2026</span>' +
+        '<span style="font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:5px"><span style="width:10px;height:4px;background:var(--bar);border:1px solid var(--bd);border-radius:2px;display:inline-block"></span>2025</span>' +
         '</div></div><div style="display:flex;align-items:flex-end;gap:2px;height:104px">' + trendBars + '</div></div>';
 
-      // City breakdown with month filter
-      const maxCity = Math.max.apply(null, cityData.map(function(c){return c.cur;}).concat([1]));
-      const CITY_C = {'delhi':'var(--acc)','delhi/ncr':'var(--acc2)','mumbai':'var(--acc3)',
-        'bangalore':'#7a8caa','hyderabad':'var(--warnc)','kolkata':'var(--acc2)',
-        'chennai':'#a87d8f','jaipur':'var(--acc)','lucknow':'var(--acc3)',
-        'punjab':'#8a9aaa','ahmedabad':'#aa7d8f','raipur':'var(--acc2)','ludhiana':'#8a9aaa'};
+      // ── 3. City month filter pills ─────────────────────────────────────────────
+      const cityMonthFilter = window._storesCityMonth || sd.currentMonth || '2026-07';
+      const MONTH_NAMES = {'2026-04':'April','2026-05':'May','2026-06':'June','2026-07':'July','2026-08':'August'};
+      const availMonths = Object.keys(MONTH_NAMES).filter(function(mk) {
+        return stores.some(function(s) { return s.monthly && s.monthly[mk] && (s.monthly[mk].v2026 > 0 || s.monthly[mk].v2025 > 0); });
+      });
+      const cityData = (function() {
+        var cityMap = {};
+        stores.forEach(function(s) {
+          var mo = s.monthly && s.monthly[cityMonthFilter];
+          if (!mo) return;
+          var ck = (s.city||'').toLowerCase().trim();
+          if (!cityMap[ck]) cityMap[ck] = {city:s.city,cur:0,prev:0,count:0};
+          cityMap[ck].cur  += mo.v2026||0;
+          cityMap[ck].prev += mo.v2025||0;
+          cityMap[ck].count += 1;
+        });
+        return Object.values(cityMap).map(function(c){
+          return {city:c.city,cur:c.cur,prev:c.prev,count:c.count,growth:c.prev>0?(c.cur-c.prev)/c.prev:0};
+        }).sort(function(a,b){return b.cur-a.cur;});
+      })();
 
-      const monthFilterPills = availMonths.map(function(mk) {
-        const isActive = mk === cityMonthFilter;
+      const monthPills = availMonths.map(function(mk) {
+        const active = mk === cityMonthFilter;
         return '<button data-mk="' + mk + '" onclick="window._storesCityMonth=this.dataset.mk;render();" style="' +
-          'padding:4px 11px;border-radius:20px;font-size:11px;font-weight:' + (isActive?'500':'400') + ';cursor:pointer;' +
-          'font-family:var(--f-sans);border:1px solid ' + (isActive?'var(--acc)':'var(--bd)') + ';' +
-          'background:' + (isActive?'var(--bg3)':'transparent') + ';' +
-          'color:' + (isActive?'var(--acc)':'var(--tx3)') + ';transition:all .18s;">' + MONTH_NAMES[mk] + '</button>';
+          'padding:4px 11px;border-radius:20px;font-size:11px;font-weight:' + (active?'500':'400') + ';cursor:pointer;' +
+          'font-family:var(--f-sans);border:1px solid ' + (active?'var(--acc)':'var(--bd)') + ';' +
+          'background:' + (active?'var(--bg3)':'transparent') + ';color:' + (active?'var(--acc)':'var(--tx3)') + ';transition:all .18s;">' + MONTH_NAMES[mk] + '</button>';
       }).join('');
 
+      const maxCity = Math.max.apply(null, cityData.map(function(c){return c.cur;}).concat([1]));
+      const CITY_C  = {'delhi':'var(--acc)','mumbai':'var(--acc3)','bangalore':'#7a8caa','hyderabad':'var(--warnc)',
+        'kolkata':'var(--acc2)','chennai':'#a87d8f','jaipur':'var(--acc)','lucknow':'var(--acc3)',
+        'ahmedabad':'#aa7d8f','raipur':'var(--acc2)','ludhiana':'#8a9aaa','mohali':'#9aaa8a','chandigarh':'#7a9aaa'};
       const cityHtml = '<div class="card" style="margin-bottom:12px">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">' +
-        '<span class="lbl" style="margin:0">Revenue by City — MTD</span>' +
-        '<div style="display:flex;gap:5px;flex-wrap:wrap">' + monthFilterPills + '</div></div>' +
+        '<span class="lbl" style="margin:0">Revenue by City</span>' +
+        '<div style="display:flex;gap:5px;flex-wrap:wrap">' + monthPills + '</div></div>' +
         cityData.map(function(c) {
-          const w = Math.min((c.cur/maxCity)*100,100);
+          const w   = Math.min((c.cur/maxCity)*100,100);
           const col = CITY_C[c.city.toLowerCase()] || 'var(--tx3)';
           return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">' +
-            '<div style="width:80px;font-size:11.5px;font-weight:400;color:var(--tx2)">' + c.city + '</div>' +
+            '<div style="width:80px;font-size:11.5px;color:var(--tx2)">' + c.city + '</div>' +
             '<div style="font-size:9px;color:var(--tx4);width:18px">' + c.count + 's</div>' +
             '<div style="flex:1;background:var(--bar);border-radius:3px;height:5px;overflow:hidden">' +
             '<div style="background:' + col + ';width:' + w + '%;height:100%;border-radius:3px;transition:width .6s"></div></div>' +
@@ -2173,94 +2145,86 @@ function render() {
             grwPill(c.growth*100) + '</div>';
         }).join('') + '</div>';
 
-      // Needs Attention — ALL stores with declining YoY (or all sorted by growth)
-      const decliningStores = stores.filter(function(s) { return s.growth < 0; })
-        .sort(function(a,b) { return a.growth - b.growth; });
-      const attentionList = decliningStores.length > 0 ? decliningStores : stores.slice(-5).reverse();
-      const attentionHtml = attentionList.map(function(s) {
-        const mo = s.monthly && s.monthly[sd.currentMonth];
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sep)">' +
-          '<div>' +
-          '<div style="font-size:12px;font-weight:500;color:var(--tx)">' + s.name + '</div>' +
-          '<div style="font-size:9.5px;color:var(--tx3)">' + s.city + '</div>' +
-          '</div>' +
-          '<div style="text-align:right">' +
-          '<div style="font-size:13px;font-family:var(--f-mono);color:var(--dnc);font-weight:600">' + fmtPct(s.growth*100) + '</div>' +
-          '<div style="font-size:10px;color:var(--tx2);margin-top:2px">' +
-          '2025: ' + fmtIN(s.prevMTD) + ' → 2026: ' + fmtIN(s.currentMTD) + '</div>' +
-          '</div></div>';
-      }).join('');
-
-      // Today by Store — ALL stores
-      const dayHtml = activeDay.length > 0 ?
-        activeDay.map(function(s) {
-          const g = s.growth !== null ? s.growth : null;
-          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--sep)">' +
-            '<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:500;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + s.name + '</div>' +
+      // ── 4. Needs Attention ─────────────────────────────────────────────────────
+      const declining = stores.filter(function(s){return s.growth<0;}).sort(function(a,b){return a.growth-b.growth;});
+      const attentionHtml = '<div class="card" style="margin-bottom:10px">' +
+        '<span class="lbl" style="display:block;margin-bottom:10px">Needs Attention — YoY Declining (' + declining.length + ')</span>' +
+        (declining.length===0 ? '<div style="color:var(--tx3);font-size:11px;padding:8px 0">All stores growing!</div>' :
+        declining.map(function(s) {
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sep)">' +
+            '<div><div style="font-size:12px;font-weight:500;color:var(--tx)">' + s.name + '</div>' +
             '<div style="font-size:9.5px;color:var(--tx3)">' + s.city + '</div></div>' +
-            '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' +
-            '<div style="font-size:11px;font-family:var(--f-mono);color:var(--tx3)">' + (s.sales2025!==null?fmtIN(s.sales2025):'—') + '</div>' +
-            '<div style="font-size:12px;font-family:var(--f-mono);color:var(--tx);font-weight:500">' + fmtIN(s.sales2026) + '</div>' +
-            (g!==null ? grwPill(g*100) : '<span style="font-size:10px;color:var(--tx4)">New</span>') +
-            '</div></div>';
-        }).join('') :
-        '<div style="padding:16px;text-align:center;color:var(--tx3);font-size:11px">No data</div>';
+            '<div style="text-align:right"><div style="font-size:13px;font-family:var(--f-mono);color:var(--dnc);font-weight:600">' + fmtPct(s.growth*100) + '</div>' +
+            '<div style="font-size:10px;color:var(--tx2)">' + fmtIN(s.prevMTD) + ' → ' + fmtIN(s.currentMTD) + '</div></div></div>';
+        }).join('')) + '</div>';
 
-      // Store rankings table
-      const storeRows = stores.map(function(s,i) {
-        const medals = ['\ud83e\udfc7','\ud83e\udfc8','\ud83e\udfc9'];
-        const isTop3 = i < 3;
+      // ── 5. Today / Yesterday date filter + store list ──────────────────────────
+      // Simple toggle: Today or Yesterday
+      const dayView = window._storeDayView || 'today';
+      const dayData = dayView === 'yesterday' ? yestStores : todayStores;
+      const dayDate = dayView === 'yesterday' ? yestDate   : latestDate;
+      const mkDayPill = function(label, val) {
+        const active = dayView === val;
+        const safeVal = val; // 'today' or 'yesterday' — no special chars
+        return '<button data-dv="' + safeVal + '" onclick="window._storeDayView=this.dataset.dv;render();" style="' +
+          'padding:4px 11px;border-radius:20px;font-size:11px;font-weight:' + (active?'500':'400') + ';cursor:pointer;' +
+          'font-family:var(--f-sans);border:1px solid ' + (active?'var(--tx)':'var(--bd)') + ';' +
+          'background:' + (active?'var(--tx)':'transparent') + ';color:' + (active?'var(--bg2)':'var(--tx2)') + ';transition:all .18s;">' + label + '</button>';
+      };
+      const dayPills = '<div style="display:flex;gap:6px;align-items:center">' +
+        mkDayPill('Today', 'today') + mkDayPill('Yesterday', 'yesterday') + '</div>';
+
+      const dayStoreRows = dayData.map(function(s) {
+        const g = s.growth;
+        const hasPrev = s.sales2025 !== null && s.sales2025 > 0;
+        const sameDay2025Label = hasPrev ? fmtIN(s.sales2025) : '<span style="color:var(--tx4)">New</span>';
+        const diff = hasPrev ? s.sales2026 - s.sales2025 : null;
         return '<tr style="border-bottom:1px solid var(--sep)">' +
-          '<td style="padding:7px 8px;color:var(--tx3);font-family:var(--f-mono);font-size:11px">' + (isTop3?medals[i]:i+1) + '</td>' +
           '<td style="padding:7px 8px"><div style="font-size:12px;font-weight:500;color:var(--tx)">' + s.name + '</div>' +
           '<div style="font-size:9.5px;color:var(--tx3)">' + s.city + '</div></td>' +
-          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);color:var(--tx3);font-size:11px">' + fmtIN(s.prevMTD) + '</td>' +
-          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);color:' + (isTop3?'var(--upc)':'var(--tx)') + ';font-weight:' + (isTop3?600:400) + ';font-size:12px">' + fmtIN(s.currentMTD) + '</td>' +
-          '<td style="text-align:right;padding:7px 8px">' + grwPill(s.growth*100) + '</td>' +
-          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:11.5px;color:var(--tx2)">' + fmtIN(s.ytd) + '</td></tr>';
+          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:11.5px;color:var(--tx3)">' + sameDay2025Label + '</td>' +
+          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--tx)">' + fmtIN(s.sales2026) + '</td>' +
+          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:11px;color:' + (diff===null?'var(--tx4)':diff>=0?'var(--upc)':'var(--dnc)') + '">' +
+          (diff===null ? '—' : (diff>=0?'+':'-') + fmtIN(Math.abs(diff))) + '</td>' +
+          '<td style="text-align:right;padding:7px 8px">' + (g!==null ? grwPill(g*100) : '<span style="font-size:10px;color:var(--tx4)">New</span>') + '</td></tr>';
       }).join('');
 
-      mc.innerHTML = viewPills + kpiHtml + trendHtml +
-        '<div class="g2" style="margin-bottom:12px">' + cityHtml +
+      // Format: "17 Jul 2026 vs 17 Jul 2025"
+      const dayLabel = dayDate ? fmtDateLabel(dayDate) : '';
+      const prevYear = dayDate ? dayDate.replace(/^20(\d\d)/, function(m,y){ return '20'+(+y-1); }) : '';
+      const prevYearLabel = prevYear ? fmtDateLabel(prevYear) : '';
+      const dayCompHtml = '<div class="card" style="margin-bottom:12px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">' +
         '<div>' +
-        '<div class="card" style="margin-bottom:10px">' +
-        '<span class="lbl" style="display:block;margin-bottom:10px">Needs Attention — YoY Declining Stores (' + attentionList.length + ')</span>' +
-        attentionHtml + '</div>' +
-        '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
-        '<span class="lbl" style="margin:0">Today by Store (' + today.length + ')</span>' +
-        '<span style="font-size:9.5px;color:var(--tx3)">2025 → 2026</span></div>' +
-        todayHtml + '</div>' +
-        '</div></div>' +
-        (storeView !== 'mtd' ?
-        '<div class="card" style="margin-bottom:12px">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">' +
-        '<span class="lbl" style="margin:0">' + (storeView==='yesterday'?'Yesterday':'Today') + ' — Store-wise Comparison · ' + activeDayDate + '</span>' +
-        '<span style="font-size:10px;color:var(--tx3)">Sorted by ' + (storeView==='yesterday'?'yesterday':'today') + ' revenue</span>' +
-        '</div>' +
+        '<div class="lbl" style="margin-bottom:4px">Store-wise Daily Comparison</div>' +
+        '<div style="font-size:11px;color:var(--tx2)">' + dayLabel + ' vs ' + prevYearLabel + '</div>' +
+        '</div>' + dayPills + '</div>' +
         '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:480px">' +
         '<thead><tr style="border-bottom:1px solid var(--sep)">' +
-        '<th style="text-align:left;padding:6px 8px;font-size:9.5px;color:var(--tx3);font-weight:500;letter-spacing:.08em;text-transform:uppercase">Store</th>' +
-        '<th style="text-align:right;padding:6px 8px;font-size:9.5px;color:var(--tx3);font-weight:500">Same Day 2025</th>' +
-        '<th style="text-align:right;padding:6px 8px;font-size:9.5px;color:var(--acc);font-weight:500">2026 Revenue</th>' +
+        '<th style="text-align:left;padding:6px 8px;font-size:9.5px;color:var(--tx3);font-weight:500;text-transform:uppercase;letter-spacing:.07em">Store</th>' +
+        '<th style="text-align:right;padding:6px 8px;font-size:9.5px;color:var(--tx3);font-weight:500">' + prevYearLabel + '</th>' +
+        '<th style="text-align:right;padding:6px 8px;font-size:9.5px;color:var(--acc);font-weight:500">' + dayLabel + '</th>' +
         '<th style="text-align:right;padding:6px 8px;font-size:9.5px;color:var(--tx3);font-weight:500">Diff</th>' +
         '<th style="text-align:right;padding:6px 8px;font-size:9.5px;color:var(--tx3);font-weight:500">Growth</th>' +
         '</tr></thead><tbody>' +
-        activeDay.map(function(s) {
-          const diff = s.sales2025 !== null ? s.sales2026 - s.sales2025 : null;
-          const g = s.growth;
-          return '<tr style="border-bottom:1px solid var(--sep)">' +
-            '<td style="padding:7px 8px"><div style="font-size:12px;font-weight:500;color:var(--tx)">' + s.name + '</div>' +
-            '<div style="font-size:9.5px;color:var(--tx3)">' + s.city + '</div></td>' +
-            '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:11.5px;color:var(--tx2)">' + (s.sales2025!==null?fmtIN(s.sales2025):'<span style="color:var(--tx4)">New</span>') + '</td>' +
-            '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--tx)">' + fmtIN(s.sales2026) + '</td>' +
-            '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:11px;color:' + (diff===null?'var(--tx4)':diff>=0?'var(--upc)':'var(--dnc)') + '">' +
-            (diff===null?'—':(diff>=0?'+':'')+fmtIN(Math.abs(diff))) + '</td>' +
-            '<td style="text-align:right;padding:7px 8px">' +
-            (g!==null ? grwPill(g*100) : '<span style="font-size:10px;color:var(--tx4)">—</span>') + '</td>' +
-            '</tr>';
-        }).join('') +
-        '</tbody></table></div></div>' : '') +
-        '<div class="card"><span class="lbl" style="display:block;margin-bottom:12px">Store Rankings — MTD vs Last Year (' + stores.length + ' stores)</span>' +
+        (dayStoreRows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--tx3);font-size:11px">No data</td></tr>') +
+        '</tbody></table></div></div>';
+
+      // ── 6. Store Rankings ──────────────────────────────────────────────────────
+      const storeRows = stores.map(function(s,i) {
+        const medals=['\ud83e\udfc7','\ud83e\udfc8','\ud83e\udfc9'];
+        const t3 = i < 3;
+        return '<tr style="border-bottom:1px solid var(--sep)">' +
+          '<td style="padding:7px 8px;color:var(--tx3);font-size:11px">' + (t3?medals[i]:i+1) + '</td>' +
+          '<td style="padding:7px 8px"><div style="font-size:12px;font-weight:500;color:var(--tx)">' + s.name + '</div>' +
+          '<div style="font-size:9.5px;color:var(--tx3)">' + s.city + '</div></td>' +
+          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);color:var(--tx3);font-size:11px">' + fmtIN(s.prevMTD) + '</td>' +
+          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);color:' + (t3?'var(--upc)':'var(--tx)') + ';font-weight:' + (t3?600:400) + ';font-size:12px">' + fmtIN(s.currentMTD) + '</td>' +
+          '<td style="text-align:right;padding:7px 8px">' + grwPill(s.growth*100) + '</td>' +
+          '<td style="text-align:right;padding:7px 8px;font-family:var(--f-mono);font-size:11.5px;color:var(--tx2)">' + fmtIN(s.ytd) + '</td></tr>';
+      }).join('');
+      const rankingsHtml = '<div class="card">' +
+        '<span class="lbl" style="display:block;margin-bottom:12px">Store Rankings — MTD ' + (MONTH_NAMES[cityMonthFilter]||'') + ' (' + stores.length + ' stores)</span>' +
         '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:11px;min-width:520px">' +
         '<thead><tr style="border-bottom:1px solid var(--sep)">' +
         '<th style="text-align:left;padding:6px 8px;color:var(--tx3);width:30px">#</th>' +
@@ -2270,6 +2234,27 @@ function render() {
         '<th style="text-align:right;padding:6px 8px;color:var(--tx3)">YoY</th>' +
         '<th style="text-align:right;padding:6px 8px;color:var(--acc2)">YTD</th>' +
         '</tr></thead><tbody>' + storeRows + '</tbody></table></div></div>';
+
+      // ── Assemble ──────────────────────────────────────────────────────────────
+      mc.innerHTML = kpiHtml + trendHtml +
+        '<div class="g2" style="margin-bottom:12px">' + cityHtml +
+        '<div>' + attentionHtml +
+        '<div class="card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+        '<span class="lbl" style="margin:0">Today by Store</span>' +
+        '<span style="font-size:9.5px;color:var(--tx3)">2025 → 2026</span></div>' +
+        (todayStores.map(function(s) {
+          const g = s.growth;
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--sep)">' +
+            '<div><div style="font-size:11.5px;font-weight:500;color:var(--tx)">' + s.name + '</div>' +
+            '<div style="font-size:9.5px;color:var(--tx3)">' + s.city + '</div></div>' +
+            '<div style="display:flex;align-items:center;gap:8px">' +
+            '<div style="font-size:11px;font-family:var(--f-mono);color:var(--tx3)">' + (s.sales2025!==null?fmtIN(s.sales2025):'—') + '</div>' +
+            '<div style="font-size:12px;font-family:var(--f-mono);color:var(--tx);font-weight:500">' + fmtIN(s.sales2026) + '</div>' +
+            (g!==null ? grwPill(g*100) : '<span style="font-size:10px;color:var(--tx4)">New</span>') + '</div></div>';
+        }).join('') || '<div style="padding:12px 0;color:var(--tx3);font-size:11px;text-align:center">No data</div>') +
+        '</div></div></div>' +
+        dayCompHtml + rankingsHtml;
     }
     $id('footer').textContent = 'LIVE · Stores: ' + (D.storeData?.summary?.totalStores||0) + ' stores · ' + (D.storeData?.latestDate||'') + ' · AUTO-REFRESH 5 MIN';
     return;
