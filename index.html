@@ -2158,21 +2158,27 @@ function render() {
             '<div style="font-size:10px;color:var(--tx2)">' + fmtIN(s.prevMTD) + ' → ' + fmtIN(s.currentMTD) + '</div></div></div>';
         }).join('')) + '</div>';
 
-      // ── 5. Today / Yesterday date filter + store list ──────────────────────────
-      // Simple toggle: Today or Yesterday
-      const dayView = window._storeDayView || 'today';
-      const dayData = dayView === 'yesterday' ? yestStores : todayStores;
-      const dayDate = dayView === 'yesterday' ? yestDate   : latestDate;
-      const mkDayPill = function(label, val) {
-        const active = dayView === val;
-        const safeVal = val; // 'today' or 'yesterday' — no special chars
-        return '<button data-dv="' + safeVal + '" onclick="window._storeDayView=this.dataset.dv;render();" style="' +
-          'padding:4px 11px;border-radius:20px;font-size:11px;font-weight:' + (active?'500':'400') + ';cursor:pointer;' +
-          'font-family:var(--f-sans);border:1px solid ' + (active?'var(--tx)':'var(--bd)') + ';' +
-          'background:' + (active?'var(--tx)':'transparent') + ';color:' + (active?'var(--bg2)':'var(--tx2)') + ';transition:all .18s;">' + label + '</button>';
-      };
-      const dayPills = '<div style="display:flex;gap:6px;align-items:center">' +
-        mkDayPill('Today', 'today') + mkDayPill('Yesterday', 'yesterday') + '</div>';
+      // ── 5. Date-picker for daily comparison ─────────────────────────────────────
+      const availDates  = sd.availStoreDates || [];
+      const dailyMap    = sd.dailyStoreMap   || {};
+      // Default to most recent available date
+      const selectedDay = window._storeCompDate || (availDates.length ? availDates[availDates.length-1] : '');
+      const dayData = dailyMap[selectedDay] || [];
+      const dayDate = selectedDay;
+
+      // Date pills — show last 7 available dates
+      const recentDates = availDates.slice(-7);
+      const dayPills = '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">' +
+        recentDates.map(function(d) {
+          const active = d === selectedDay;
+          const parts  = d.split('-');
+          const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const label  = parts[2] + ' ' + months[+parts[1]-1];
+          return '<button data-sd="' + d + '" onclick="window._storeCompDate=this.dataset.sd;render();" style="' +
+            'padding:4px 10px;border-radius:16px;font-size:11px;font-weight:' + (active?'500':'400') + ';cursor:pointer;' +
+            'font-family:var(--f-sans);border:1px solid ' + (active?'var(--tx)':'var(--bd)') + ';' +
+            'background:' + (active?'var(--tx)':'transparent') + ';color:' + (active?'var(--bg2)':'var(--tx2)') + ';transition:all .18s;">' + label + '</button>';
+        }).join('') + '</div>';
 
       const dayStoreRows = dayData.map(function(s) {
         const g = s.growth;
