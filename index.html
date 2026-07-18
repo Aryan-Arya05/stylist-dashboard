@@ -2166,18 +2166,17 @@ function render() {
       const dayData = dailyMap[selectedDay] || [];
       const dayDate = selectedDay;
 
-      // Date pills — show last 7 available dates
-      const recentDates = availDates.slice(-7);
+      // Date pills — show ALL available dates (compact: "17 Jul", "30 Jul" etc.)
+      const DMONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       const dayPills = '<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">' +
-        recentDates.map(function(d) {
+        availDates.map(function(d) {
           const active = d === selectedDay;
-          const parts  = d.split('-');
-          const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-          const label  = parts[2] + ' ' + months[+parts[1]-1];
+          const p = d.split('-');
+          const label = p[2] + ' ' + DMONTHS[+p[1]-1];
           return '<button data-sd="' + d + '" onclick="window._storeCompDate=this.dataset.sd;render();" style="' +
             'padding:4px 10px;border-radius:16px;font-size:11px;font-weight:' + (active?'500':'400') + ';cursor:pointer;' +
             'font-family:var(--f-sans);border:1px solid ' + (active?'var(--tx)':'var(--bd)') + ';' +
-            'background:' + (active?'var(--tx)':'transparent') + ';color:' + (active?'var(--bg2)':'var(--tx2)') + ';transition:all .18s;">' + label + '</button>';
+            'background:' + (active?'var(--tx)':'transparent') + ';color:' + (active?'var(--bg2)':'var(--tx2)') + ';transition:all .18s;white-space:nowrap;">' + label + '</button>';
         }).join('') + '</div>';
 
       const dayStoreRows = dayData.map(function(s) {
